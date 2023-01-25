@@ -9,6 +9,7 @@ sqlmodel = "*"
 asyncpg = "*"
 
 [dev-packages]
+pytest-asyncio = "*"
 black = "*"
 
 [requires]
