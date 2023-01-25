@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 sqlalchemy = "1.4"
+sqlmodel = "*"
+asyncpg = "*"
 
 [dev-packages]
 black = "*"
