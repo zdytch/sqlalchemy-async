@@ -1,6 +1,6 @@
 import pytest
 import asyncio
-from . import db as db_config
+import db_config
 
 
 @pytest.fixture()

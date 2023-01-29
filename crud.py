@@ -1,5 +1,5 @@
-from .models import Trade, TradeSide
-from .db import DB
+from models import Trade, TradeSide
+from db_config import DB
 from sqlmodel import select, delete
 from sqlalchemy.orm import joinedload
 from uuid import UUID

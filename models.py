@@ -1,4 +1,4 @@
-from .db import DBModel
+from db_config import DBModel
 from sqlmodel import Field, Column, Enum, Relationship, ForeignKey
 from sqlalchemy import UniqueConstraint
 from uuid import UUID
