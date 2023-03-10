@@ -1,9 +1,9 @@
-from db_config import DBModel
-from sqlmodel import Field, Column, Enum, Relationship, ForeignKey
-from sqlalchemy import UniqueConstraint
-from uuid import UUID
+from db_config import Model
+from sqlalchemy import Enum, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column as Column, relationship
 from decimal import Decimal
 from enum import StrEnum
+from uuid import UUID
 
 
 class Exchange(StrEnum):
@@ -54,35 +54,29 @@ class OrderStatus(StrEnum):
     FILLED = 'FILLED'
 
 
-class Instrument(DBModel, table=True):
-    symbol: str
-    exchange: Exchange = Field(sa_column=Column(Enum(Exchange), nullable=False))
-    type: InstrumentType = Field(sa_column=Column(Enum(InstrumentType), nullable=False))
-    description: str
+class Instrument(Model):
+    symbol: Mapped[str]
+    exchange: Mapped[Exchange]
+    type: Mapped[InstrumentType]
+    description: Mapped[str]
 
     __table_args__ = (UniqueConstraint('symbol', 'exchange'),)
 
 
-class Trade(DBModel, table=True):
-    instrument_id: UUID = Field(foreign_key='instrument.id')
-    instrument: Instrument = Relationship()
-    side: TradeSide = Field(sa_column=Column(Enum(TradeSide), nullable=False))
-    status: TradeStatus = Field(
-        sa_column=Column(Enum(TradeStatus), nullable=False), default=TradeStatus.IDEA
-    )
+class Trade(Model):
+    instrument_id: Mapped[UUID] = Column(ForeignKey('instrument.id'))
+    instrument: Mapped[Instrument] = relationship()
+    side: Mapped[TradeSide]
+    status: Mapped[TradeStatus] = Column(Enum(TradeStatus), default=TradeStatus.IDEA)
 
 
-class Order(DBModel, table=True):
-    trade_id: UUID = Field(
-        sa_column=Column(ForeignKey('trade.id', ondelete='CASCADE'), nullable=False)
-    )
-    trade: Trade = Relationship(back_populates='orders')
-    type: OrderType = Field(sa_column=Column(Enum(OrderType), nullable=False))
-    role: OrderRole = Field(sa_column=Column(Enum(OrderRole), nullable=False))
-    status: OrderStatus = Field(
-        sa_column=Column(Enum(OrderStatus), nullable=False), default=OrderStatus.DRAFT
-    )
-    price: Decimal = Field(default=Decimal('0.0'), nullable=False)
-    trigger_price: Decimal = Field(default=Decimal('0.0'), nullable=False)
+class Order(Model):
+    trade_id: Mapped[UUID] = Column(ForeignKey('trade.id', ondelete='CASCADE'))
+    trade: Mapped[Trade] = relationship(back_populates='orders')
+    type: Mapped[OrderType]
+    role: Mapped[OrderRole]
+    status: Mapped[OrderStatus] = Column(Enum(OrderStatus), default=OrderStatus.DRAFT)
+    price: Mapped[Decimal] = Column(default=Decimal('0.0'))
+    trigger_price: Mapped[Decimal] = Column(default=Decimal('0.0'))
 
     __table_args__ = (UniqueConstraint('trade_id', 'role'),)

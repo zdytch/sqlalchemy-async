@@ -1,6 +1,11 @@
-from sqlalchemy.ext.asyncio import AsyncSession as DB, create_async_engine
-from sqlalchemy.orm import sessionmaker
-from sqlmodel import SQLModel, Field
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr
+from sqlalchemy import UUID as UUIDField
+from uuid import UUID, uuid4
+from sqlalchemy.ext.asyncio import (
+    AsyncSession as DB,
+    create_async_engine,
+    async_sessionmaker,
+)
 from uuid import UUID, uuid4
 import os
 
@@ -12,12 +17,19 @@ DB_URL = (
     f'{os.getenv("POSTGRES_DATABASE")}'
 )
 
-engine = create_async_engine(DB_URL, connect_args={'server_settings': {'jit': 'off'}})
-Session = sessionmaker(engine, class_=DB, expire_on_commit=False)
+_engine = create_async_engine(DB_URL, connect_args={'server_settings': {'jit': 'off'}})
+
+Session = async_sessionmaker(_engine, class_=DB, expire_on_commit=False)
 
 
-class DBModel(SQLModel):
-    id: UUID = Field(default_factory=uuid4, primary_key=True)
+class Model(DeclarativeBase):
+    __abstract__ = True
+
+    id: Mapped[UUID] = mapped_column(UUIDField, default=uuid4, primary_key=True)
+
+    @declared_attr  # type: ignore
+    def __tablename__(cls):
+        return cls.__name__.lower()
 
     def __hash__(self):
         return hash(self.id)
@@ -28,11 +40,11 @@ async def get_db():
         yield session
 
 
-async def create_all():
-    async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.create_all)
+async def create_all_tables():
+    async with _engine.begin() as conn:
+        await conn.run_sync(Model.metadata.create_all)
 
 
-async def drop_all():
-    async with engine.begin() as conn:
-        await conn.run_sync(SQLModel.metadata.drop_all)
+async def drop_all_tables():
+    async with _engine.begin() as conn:
+        await conn.run_sync(Model.metadata.drop_all)

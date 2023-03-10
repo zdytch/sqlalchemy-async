@@ -1,7 +1,6 @@
-from models import Trade, TradeSide
 from db_config import DB
-from sqlmodel import select, delete
-from sqlalchemy.orm import joinedload
+from sqlalchemy import select, delete, orm
+from models import Trade, TradeSide
 from uuid import UUID
 
 
@@ -15,7 +14,7 @@ async def create_trade(db: DB, instrument_id: UUID, side: TradeSide) -> Trade:
 
 async def read_trade(db: DB, **kwargs) -> Trade:
     result = await db.execute(
-        select(Trade).filter_by(**kwargs).options(joinedload(Trade.instrument))
+        select(Trade).filter_by(**kwargs).options(orm.selectinload(Trade.instrument))
     )
 
     return result.unique().scalar_one()

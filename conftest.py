@@ -20,9 +20,9 @@ def event_loop():
 
 @pytest.fixture(autouse=True)
 async def setup_tables():
-    await db_config.drop_all()
-    await db_config.create_all()
+    await db_config.drop_all_tables()
+    await db_config.create_all_tables()
 
     yield
 
-    await db_config.drop_all()
+    await db_config.drop_all_tables()
