@@ -3,10 +3,10 @@ from sqlmodel import Field, Column, Enum, Relationship, ForeignKey
 from sqlalchemy import UniqueConstraint
 from uuid import UUID
 from decimal import Decimal
-import enum
+from enum import StrEnum
 
 
-class Exchange(enum.Enum):
+class Exchange(StrEnum):
     NYSE = 'NYSE'
     NASDAQ = 'NASDAQ'
     CME = 'CME'
@@ -14,18 +14,18 @@ class Exchange(enum.Enum):
     BINANCE = 'BINANCE'
 
 
-class InstrumentType(enum.Enum):
+class InstrumentType(StrEnum):
     STOCK = 'STK'
     FUTURE = 'FUT'
     CRYPTO = 'CRP'
 
 
-class TradeSide(enum.Enum):
+class TradeSide(StrEnum):
     BUY = 'BUY'
     SELL = 'SELL'
 
 
-class TradeStatus(enum.Enum):
+class TradeStatus(StrEnum):
     IDEA = 'IDEA'
     PENDING = 'PENDING'
     SUBMITTED = 'SUBMITTED'
@@ -34,20 +34,20 @@ class TradeStatus(enum.Enum):
     CANCELED = 'CANCELED'
 
 
-class OrderType(enum.Enum):
+class OrderType(StrEnum):
     LIMIT = 'LIMIT'
     STOP = 'STOP'
     STOP_LIMIT = 'STOP_LIMIT'
     MARKET = 'MARKET'
 
 
-class OrderRole(enum.Enum):
+class OrderRole(StrEnum):
     ENTRY_POINT = 'ENTRY_POINT'
     TAKE_PROFIT = 'TAKE_PROFIT'
     STOP_LOSS = 'STOP_LOSS'
 
 
-class OrderStatus(enum.Enum):
+class OrderStatus(StrEnum):
     DRAFT = 'DRAFT'
     SUBMITTED = 'SUBMITTED'
     PARTIALLY_FILLED = 'PARTIALLY_FILLED'
